@@ -48,7 +48,7 @@ SAX.lister()
 as a trigger to performance some predefine method, with ajax or delay data, it's Very useful   
 SAX可以作为触发器，触发预定义的方法，配合ajax或者延时数据使用  
 
-##### 简单方法/simple
+### 简单方法/simple
 ```
 // init  
 SAX.set('Xyz', {x:3, y:4}, abc)
@@ -64,7 +64,7 @@ setTimeout(function(){
 // after 3 seconds then print {a: 1,b: 2}
 ```
 
-##### 高级方法/adv
+### 高级方法/adv
 bind context  
 SAX可以绑定上下文，及传送一个data的参数  
 FKP's Router 和 Pager 使用了这种方式  
@@ -83,7 +83,7 @@ SAX.setter('Xyz', {x:3,y:4})
 // data is : {x:3,y:4}
 ```
 
-##### 自执行/run again
+### 自执行/run again
 if ID has action, you can run it again, use `runner`   
 runner能够执行已经存在的ID，如果该id有action 方法  
 
