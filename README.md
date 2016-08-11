@@ -77,7 +77,8 @@ SAX.set('Xyz', abc, [context])
 function abc(data){
     console.log('this is:'+this)
     console.log('data is:'+data)
-}
+}  
+
 SAX.setter('Xyz', {x:3,y:4})
 // this is : {a:1,b:2}
 // data is : {x:3,y:4}
@@ -93,7 +94,8 @@ let context = {a: 1,b: 2}
 SAX.set('Xyz', context, abc)
 function abc(data){
     console.log('data is:'+data)
-}
+}  
+
 SAX.runner('Xyz')
 // data is : {a: 1,b: 2}
 ```
