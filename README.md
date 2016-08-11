@@ -1,5 +1,10 @@
 # FKP-SAX
 
+```
+// install
+npm install fkp-sax --save
+```
+
 ## API  
 
 SAX的意思是"store and action X", 在`FKP-JS`和`FKP-RN`项目中均是核心方法，Router、Pager以及like flux mixins for react etc...都依赖于SAX  
