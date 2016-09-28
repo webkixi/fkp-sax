@@ -214,7 +214,7 @@ var store = function( name, data, act ){
     };
 }
 
-this._stock = {}
+var _stock = {}
 
 //like flux
 module.exports = {
