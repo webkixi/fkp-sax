@@ -507,29 +507,21 @@ var saxer = {
     },
 
     runner: function( name, ddd, key, cb ){
-        if(!name||name=='')
-            return;
-
-        var save = _stock;
-        if (typeof key==='function'){
-            cb = key;
-            key = false;
+      if (!name || name == '') return
+      var save = _stock
+      if (save[name]) {
+        var that = save[name]
+        function _runner(data, key) {
+          return that.dataer(data, key)
         }
-        if(save[name]){
-            var that = save[name]
-            function _runner(data, key){
-                var rtn = that.dataer(data, key);
-                if (cb && typeof cb==='function'){
-                    cb()
-                }
-                return rtn;
-            }
-            var _data = that.getter( 'data' )
-            if (ddd && getObjType(ddd)==='Object'){
-                _data = extend(true, _data, ddd)
-            }
-            return _runner( _data, key )
+        var _data = that.getter('data')
+        if (ddd && getObjType(ddd) === 'Object') {
+          _data = extend(true, _data, ddd)
         }
+        return _runner(_data, key)
+      } else {
+        if (ddd) return ddd
+      }
     },
 
     lister: function(){
