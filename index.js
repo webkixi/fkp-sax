@@ -217,7 +217,7 @@ var store = function( name, data, act ){
 var _stock = {}
 
 //like flux
-module.exports = {
+var saxer = {
     append: function(name, dataOrAct, fun){
         if(!name||name=='') return false;
 
@@ -471,6 +471,8 @@ module.exports = {
                     }
                 }
             }
+        } else {
+          return save[name].dataer(null);
         }
     },
 
@@ -534,3 +536,8 @@ module.exports = {
         return Object.keys( _stock );
     }
 }
+
+saxer.emmit = saxer.runner
+saxer.trigger = saxer.setter
+
+module.exports = saxer
