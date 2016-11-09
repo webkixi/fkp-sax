@@ -443,6 +443,17 @@ var saxer = {
       }
     },
 
+    has: function(id, cb){
+      var keys = Object.keys(_stock)
+      if (keys.indexOf(id)>-1) {
+        var that = _stock[id]
+        if (typeof cb=='function') {
+          var _data = that.getter('data')
+          return cb(_data)
+        }
+      }
+    },
+
     lister: function(){
         return Object.keys( _stock );
     }
