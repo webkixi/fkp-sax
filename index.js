@@ -451,6 +451,7 @@ var saxer = {
           var _data = that.getter('data')
           return cb(_data)
         }
+        return true
       }
     },
 

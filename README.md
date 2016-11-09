@@ -16,6 +16,7 @@ I suggest u set SAX as global variable
 | :-------------: |-------------| -----|
 | set       | 设置命名空间及参数 |  SAX.set( ID, data, function )|
 | get       | 获取命名空间的数据 |  SAX.get( ID )|
+| has       | 是否有该命名空间 |  SAX.get( ID, [callback])|
 | append       | 给指定ID的命名空间追加数据 |  SAX.append( ID, data ) |
 | setter/trigger       | 设置命名空间并执行该空间中的方法 |  SAX.trigger( ID, data, function )|
 | getter       | 获取指定ID的命名空间的所有属性 |  SAX.getter( ID ) |
