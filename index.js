@@ -390,90 +390,8 @@ var saxer = {
     },
 
     setter: function(name, dataOrAct, fun){
-        if(!name||name=='') return false;
-
-        var save = _stock;
-
-        if(!save[name]){
-            var thisStore = new store(name);
-            save[name] = thisStore;
-        }
-
-        if ( getObjType(fun)==='Function' )
-            save[name].acter(fun);
-
-        if( getObjType(fun) === 'Array' ) {
-            var isFuns = true;
-            fun.map(function(item, i){
-                if( getObjType(item) !== 'Function' )
-                    isFuns = false;
-            })
-            if( isFuns ){
-                save[name].sact = fun;
-            }
-        }
-
-        if ( getObjType(fun) === 'Object' ) {
-            if (save[name].sact) {
-                var sact = save[name].sact
-                if (getObjType(sact) === 'Array'){
-                    if (!sact.length)
-                        sact = {}
-                    else{
-                        console.log('SA set error, fun is array ');
-                        return false;
-                    }
-                }
-                if (getObjType(sact) === 'Object'){
-                    var target = extend(sact, fun)
-                    save[name].sact = target;
-                }
-            }
-            else {
-                save[name].sact = fun;
-            }
-        }
-
-        if( dataOrAct && dataOrAct!=="" ){
-            if ( getObjType(dataOrAct) === 'Function' ){
-                if(getObjType(fun) === 'Array' ){
-                    dataOrAct.args = fun;
-                }
-                save[name].acter(dataOrAct);
-            }
-            else{
-                if (getObjType(dataOrAct) === 'Object' ||    // 存储 json对象
-                    getObjType(dataOrAct)==='String' ||     // 存储 string
-                    getObjType(dataOrAct)==='Boolean'){      // 存储 boolean对象
-                        return save[name].dataer(dataOrAct);
-                    }
-                else
-                if( getObjType(dataOrAct) === 'Array' ) {
-                    var isFuns = true;
-                    dataOrAct.map(function(item, i){
-                        if( getObjType(item) !== 'Function' )
-                            isFuns = false;
-                    })
-                    if( isFuns ){
-                        if(getObjType(fun) === 'Array' ){
-                            dataOrAct.map(function(item, i){
-                                if(getObjType(fun[i])==='Array')
-                                    item.args = fun[i];
-                                else {
-                                    item.args = [fun[i]]
-                                }
-                            })
-                        }
-                        save[name].sact = dataOrAct;
-                    }
-                    else {
-                        return save[name].dataer(dataOrAct);    //存储array数据
-                    }
-                }
-            }
-        } else {
-          return save[name].dataer(null);
-        }
+      this.set(name, dataOrAct, fun)
+      return _stock[name].dataer(dataOrAct)
     },
 
     getter: function(name){
@@ -515,10 +433,11 @@ var saxer = {
           return that.dataer(data, key)
         }
         var _data = that.getter('data')
-        if (ddd && getObjType(ddd) === 'Object') {
+        if (_data && ddd && getObjType(ddd) === 'Object') {
           _data = extend(true, _data, ddd)
         }
-        return _runner(_data, key)
+        if (that.sact.length) return _runner(_data, key)
+        return _data
       } else {
         if (ddd) return ddd
       }
