@@ -448,7 +448,7 @@ var saxer = {
     }
 }
 
-saxer.emmit = saxer.runner
+saxer.emit = saxer.runner
 saxer.trigger = saxer.setter
 
 module.exports = saxer
