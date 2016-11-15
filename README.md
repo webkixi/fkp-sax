@@ -21,7 +21,7 @@ I suggest u set SAX as global variable
 | setter/trigger       | 设置命名空间并执行该空间中的方法 |  SAX.trigger( ID, data, function )|
 | getter       | 获取指定ID的命名空间的所有属性 |  SAX.getter( ID ) |
 | deleter       | 删除指定ID的命名空间 |  SAX.deleter( ID )|
-| runner/emit       | 执行指定ID的命名空间 |  SAX.emit( ID, [JSON] )|
+| runner/roll       | 执行指定ID的命名空间 |  SAX.roll( ID, [JSON] )|
 | lister       | 列表出所有的命名空间 |  SAX.lister()|
 
 ## 作为内存数据库
@@ -92,8 +92,8 @@ SAX.trigger('Xyz', {x:3,y:4})
 ```
 
 ### 自执行/run again
-if ID has action, you can run it again, use `emit`   
-emit能够执行已经存在的ID，如果该id有action 方法  
+if ID has action, you can run it again, use `roll`   
+roll能够执行已经存在的ID，如果该id有action 方法  
 
 ```
 // init  
@@ -103,6 +103,6 @@ function abc(data){
     console.log('data is:'+data)
 }  
 
-SAX.emit('Xyz')
+SAX.roll('Xyz')
 // data is : {a: 1,b: 2}
 ```

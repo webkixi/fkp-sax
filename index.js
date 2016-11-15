@@ -76,6 +76,7 @@ var store = function( name, data, act ){
     this.name = name||'';
     this.sdata = data || null;
     this.sact = act || [];
+    this.ctx = {"null":null};
     var me = this;
 
     this.dataer = function( data, key ){
@@ -96,7 +97,7 @@ var store = function( name, data, act ){
                         }
                     }else{
                         if (typeof fun === 'function'){
-                            var _tmp = fun( data );
+                            var _tmp = fun.call(me.ctx[me.name||'null'], data);
                             _resault.push( _tmp );
                         }
                     }
@@ -117,7 +118,7 @@ var store = function( name, data, act ){
                                 return fun.apply(fun.args[0], [fun.args[0],data])
                         }else{
                             if (typeof fun === 'function')
-                                return fun( data );
+                                return fun.call(me.ctx[me.name||'null'], data);
                         }
                     }
                 }
@@ -134,7 +135,7 @@ var store = function( name, data, act ){
                                     return fun.apply(fun.args[0], [fun.args[0],data])
                             }else{
                                 if (typeof fun === 'function')
-                                    return fun( data );
+                                    return fun.call(me.ctx[me.name||'null'], data);
                             }
                         }
                     }
@@ -152,7 +153,7 @@ var store = function( name, data, act ){
                         }
                     }else{
                         if (typeof fun === 'function'){
-                            var _tmp = fun()
+                            var _tmp = fun.call(me.ctx[me.name||'null']);
                             _resault.push( _tmp );
                         }
                     }
@@ -165,12 +166,11 @@ var store = function( name, data, act ){
                     if (sacts[key]) {
                         var fun = sacts[key]
                         if(getObjType(fun.args) === 'Array'){
-                            fun.args.push( data )
                             if (typeof fun === 'function')
                                 return fun.apply(fun.args[0], fun.args)
                         }else{
                             if (typeof fun === 'function')
-                                return fun( data );
+                                return fun.call(me.ctx[me.name||'null']);
                         }
                     }
                 }
@@ -183,7 +183,7 @@ var store = function( name, data, act ){
                                     return fun.apply(fun.args[0], fun.args)
                             }else{
                                 if (typeof fun === 'function')
-                                    return fun();
+                                    return fun.call(me.ctx[me.name||'null']);
                             }
                         }
                     }
@@ -212,6 +212,10 @@ var store = function( name, data, act ){
         if( type === 'data')
             return this.sdata;
     };
+
+    this.binder = function(ctx) {
+      this.ctx[this.name] = ctx
+    }
 }
 
 var _stock = {}
@@ -457,10 +461,16 @@ var saxer = {
 
     lister: function(){
         return Object.keys( _stock );
+    },
+
+    bind: function(name, ctx) {
+      if (!name || name == '') return;
+      var save = _stock;
+      if (save[name]) save[name].binder(ctx||null)
     }
 }
 
-saxer.emit = saxer.runner
+saxer.roll = saxer.runner
 saxer.trigger = saxer.setter
 
 module.exports = saxer
