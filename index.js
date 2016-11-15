@@ -193,8 +193,20 @@ var store = function( name, data, act ){
     }
 
     this.acter = function( act ){
-        if ( act )
-            this.sact.push( act );
+      if (act) {
+        var actType = getObjType(this.sact)
+        switch (actType) {
+          case 'Array':
+            this.sact.push(act);
+            break;
+          case 'Object':
+            var randomId = (new Date()).getTime().toString().substring(3)
+            this.sact[randomId] = act
+            break;
+          default:
+            this.sact.push(act);
+        }
+      }
     }
 
     this.setter = function( data, act ){
@@ -433,14 +445,23 @@ var saxer = {
       var save = _stock
       if (save[name]) {
         var that = save[name]
+
         function _runner(data, key) {
           return that.dataer(data, key)
         }
+
         var _data = that.getter('data')
-        if (_data && ddd && getObjType(ddd) === 'Object') {
+        if (_data && getObjType(ddd) == 'Object') {
           _data = extend(true, _data, ddd)
         }
-        if (that.sact.length) return _runner(_data, key)
+
+        if (getObjType(ddd) == 'String') {
+          key = ddd;
+          ddd = undefined;
+        }
+
+        if (getObjType(that.sact) == 'Array' && that.sact.length) return _runner(_data)
+        if (getObjType(that.sact) == 'Object') return _runner(_data, key)
         return _data
       } else {
         if (ddd) return ddd
