@@ -488,6 +488,10 @@ var saxer = {
       if (!name || name == '') return;
       var save = _stock;
       if (save[name]) save[name].binder(ctx||null)
+    },
+
+    setActions: function(name, acts){
+      this.set(name, null, acts)
     }
 }
 

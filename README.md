@@ -14,15 +14,17 @@ I suggest u set SAX as global variable
 
 | API           | 描述           | 例子  |
 | :-------------: |-------------| -----|
-| set       | 设置命名空间及参数 |  SAX.set( ID, data, function )|
+| set       | 设置命名空间及参数 |  SAX.set( ID, data, actions )|
 | get       | 获取命名空间的数据 |  SAX.get( ID )|
 | has       | 是否有该命名空间 |  SAX.get( ID, [callback])|
 | append       | 给指定ID的命名空间追加数据 |  SAX.append( ID, data ) |
-| setter/trigger       | 设置命名空间并执行该空间中的方法 |  SAX.trigger( ID, data, function )|
+| setter/trigger       | 设置命名空间并执行该空间中的方法 |  SAX.trigger( ID, data, actions )|
 | getter       | 获取指定ID的命名空间的所有属性 |  SAX.getter( ID ) |
 | deleter       | 删除指定ID的命名空间 |  SAX.deleter( ID )|
 | runner/roll       | 执行指定ID的命名空间 |  SAX.roll( ID, [JSON] )|
 | lister       | 列表出所有的命名空间 |  SAX.lister()|
+| bind       | 显示绑定命名空间方法的上线文(bind context) |  SAX.bind(id, ctx)|
+| setActions       | 设置命名空间的action |  SAX.setActions(id, [fun collections])|
 
 ## 作为内存数据库
 as a simple data library in memery      
