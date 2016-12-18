@@ -26,18 +26,40 @@ I suggest u set SAX as global variable
 | bind       | 显示绑定命名空间方法的上线文(bind context) |  SAX.bind(id, ctx)|
 | setActions       | 设置命名空间的action |  SAX.setActions(id, [fun collections])|
 
+## Instance/实例化
+```
+import SAX from 'fkp-sax'
+const saxer = SAX('uniqueName')  //SAX.set('uniqueName', {}, function)
+```
+saxer有如下API
+saxer have some API function
+
+| API           | 描述           | 例子  |
+| :-------------: |-------------| -----|
+| get       | get data from uniqueName |  saxer.get()|
+| has       | 是否有其他命名空间 |  saxer.has( otherUniqueName, [callback])|
+| append       | 追加数据 |  saxer.append( data ) |
+| trigger       | performance uniqueName's function with append data |  saxer.trigger( data )|
+| roll       | performance uniqueName's function with new data |  saxer.roll( data )|
+| bind       | 显示绑定命名空间方法的上下文(bind context) |  saxer.bind(context)|
+| pop       | uniqueName's data is array, then pop the last item  |  saxer.pop()|
+
+
 ## 作为内存数据库
 as a simple data library in memery      
 SAX可以作为简易的内存数据库，来存储页面中的变量  
 
-> set and get and deleter   
+> Normal operation  
+set and get and deleter   
 
 ```
 // Json
 SAX.set('Xyz', {a: 1, b: 2})
 SAX.append('Xyz', {c: 3})
+SAX.append('Xyz', "ni hao")
+SAX.append('Xyz', [1,2,3])
 SAX.get('Xyz')
-// {a:1, b:2, c:3}  
+// {a:1, b:2, c:3, [uniqueId]:'ni hao', [uniqueId]:[1,2,3] }  
 
 // Array
 SAX.set('Xyz', [1,2,3])
@@ -47,10 +69,28 @@ SAX.append('Xyz', {x:22})
 SAX.get('Xyz')
 // [1, 2, 3, 4, 'abc', {x:22}]
 
+// other
+SAX.set('Xyz', 'hello')
+SAX.append('Xyz', 4)
+SAX.append('Xyz', {x:22})
+SAX.append('Xyz', [1,2,3])
+SAX.get('Xyz')
+// ['nihao', 4, {x:22}, [1,2,3]]
 
 SAX.deleter('Xyz')
 SAX.lister()
 // no Xyz namespace
+```
+
+> Instance operation  
+simplify working processes
+
+```
+const test = SAX('uniqueName', {}, (data)=>{console.log(data)})
+test.append({a: 123, b: 234})
+test.roll()   // object {a: 123, ...}
+test.trigger({a: 111, b: 222})   // object {a: 111, b: 222}
+...
 ```
 
 ## 作为触发器  
@@ -59,18 +99,33 @@ SAX可以作为触发器，触发预定义的方法，配合ajax或者延时数�
 
 ### 简单方法/simple
 ```
-// init  
+# Object  
 SAX.set('Xyz', {x:3, y:4}, abc)
 function abc(data){
-   console.log(data)
+  console.log(data)
 }
 
-setTimeout(function(){
-   let _data = {a: 1, b: 2}
-   SAX.trigger('Xyz', _data)  // only use `trigger`
-}, 3000)
+SAX.roll('Xyz')  // print {x:3, y:4}
 
-// after 3 seconds then print {a: 1,b: 2}
+setTimeout(function(){
+  let _data = {a: 1, b: 2}
+  SAX.trigger('Xyz', _data)  // only use `trigger`
+}, 3000)
+// after 3 seconds then print {x:3, y:4, a: 1, b: 2}
+
+# Array
+SAX.set('Xyz', [1, 2], abc)
+function abc(data){
+  console.log(data)
+}
+
+SAX.roll('Xyz')   // print [1,2]
+
+setTimeout(function(){
+  let _data = [3, 4]
+  SAX.trigger('Xyz', _data)  // only use `trigger`
+}, 3000)
+// after 3 seconds then print [1,2,3,4]
 ```
 
 ### 高级方法/adv
@@ -80,12 +135,29 @@ FKP's Router 和 Pager 使用了这种方式
 [demo](http://www.agzgz.com/app)
 
 ```
-// init  
+// 1
 let context = {a: 1,b: 2}
 SAX.set('Xyz', abc, [context])
+function abc(ctx, data){
+  console.log(this)
+  console.log(ctx)
+  console.log(data)
+}  
+
+SAX.trigger('Xyz', {x:3,y:4})
+// this is : {a:1,b:2}
+// ctx is : {a:1,b:2}
+// data is : {x:3,y:4}
+
+// 2
+NOTE: function abc's arguments[0]
+
+let context = {a: 1,b: 2}
+SAX.bind('Xyz', context)
+SAX.set('Xyz', {a: 3, b: 4}, abc)
 function abc(data){
-    console.log('this is:'+this)
-    console.log('data is:'+data)
+  console.log(this)
+  console.log(data)
 }  
 
 SAX.trigger('Xyz', {x:3,y:4})
@@ -102,9 +174,8 @@ roll能够执行已经存在的ID，如果该id有action 方法
 let context = {a: 1,b: 2}
 SAX.set('Xyz', context, abc)
 function abc(data){
-    console.log('data is:'+data)
-}  
-
+  console.log(data)
+}
 SAX.roll('Xyz')
 // data is : {a: 1,b: 2}
 ```
