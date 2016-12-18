@@ -466,9 +466,9 @@ saxer.trigger = saxer.setter
 saxer.roll = function(name, key, ddd){
   if (typeof key == 'object') {
     ddd = key
-    storeAct.runner(name, ddd)
+    saxer.runner(name, ddd)
   } else {
-    storeAct.runner(name, ddd, key)
+    saxer.runner(name, ddd, key)
   }
 }
 
@@ -477,28 +477,28 @@ function sax(name){
 }
 sax.prototype = {
   roll: function(key, data){
-    return storeAct.roll(this.name, key, data)
+    return saxer.roll(this.name, key, data)
   },
   get: function(){
-    return storeAct.get(this.name)
+    return saxer.get(this.name)
   },
   data: function(){
-    return storeAct.get(this.name)
+    return saxer.get(this.name)
   },
   append: function(data, fun){
-    storeAct.append(this.name, data, fun)
+    saxer.append(this.name, data, fun)
   },
   bind: function(ctx){
-    storeAct.bind(this.name, ctx)
+    saxer.bind(this.name, ctx)
   },
   has: function(id, cb){
-    storeAct.has(id, cb)
+    saxer.has(id, cb)
   },
   pop: function(){
-    storeAct.pop(this.name)
+    saxer.pop(this.name)
   },
   trigger: function(data){
-    storeAct.trigger(this.name, data)
+    saxer.trigger(this.name, data)
   }
 }
 
@@ -508,15 +508,15 @@ function SAX(name, data, funs){
     if (save[name]) {
       return new sax(name)
     } else {
-      storeAct.set(name, data, funs)
+      saxer.set(name, data, funs)
       return new sax(name)
     }
   }
 }
 
-var _keys = Object.keys(storeAct)
+var _keys = Object.keys(saxer)
 _keys.map(function(item, ii){
-  SAX[item] = storeAct[item]
+  SAX[item] = saxer[item]
 })
 
 module.exports = SAX
