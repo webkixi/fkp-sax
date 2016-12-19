@@ -545,9 +545,6 @@ sax.prototype = {
   get: function(){
     return storeAct.get(this.name)
   },
-  data: function(){
-    return storeAct.get(this.name)
-  },
   append: function(data, fun){
     storeAct.append(this.name, data, fun)
   },
