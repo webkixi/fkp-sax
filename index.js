@@ -311,7 +311,7 @@ var store = function( name, data, act ){
 }
 
 //like flux
-var saxer = {
+var storeAct = {
     append: function(name, dataOrAct, fun){
       if (!name || name == '') return false;
 
@@ -522,13 +522,13 @@ var saxer = {
       }
     }
 }
-saxer.trigger = saxer.setter
-saxer.roll = function(name, key, ddd){
+storeAct.trigger = storeAct.setter
+storeAct.roll = function(name, key, ddd){
   if (typeof key == 'object') {
     ddd = key
-    saxer.runner(name, ddd)
+    storeAct.runner(name, ddd)
   } else {
-    saxer.runner(name, ddd, key)
+    storeAct.runner(name, ddd, key)
   }
 }
 
@@ -536,31 +536,32 @@ function sax(name, data, funs){
   this.name = name
   this.data = data
   this.funs = funs
+  this.store = _stock[name]
 }
 sax.prototype = {
   roll: function(key, data){
-    return saxer.roll(this.name, key, data)
+    return storeAct.roll(this.name, key, data)
   },
   get: function(){
-    return saxer.get(this.name)
+    return storeAct.get(this.name)
   },
   data: function(){
-    return saxer.get(this.name)
+    return storeAct.get(this.name)
   },
   append: function(data, fun){
-    saxer.append(this.name, data, fun)
+    storeAct.append(this.name, data, fun)
   },
   bind: function(ctx){
-    saxer.bind(this.name, ctx)
+    storeAct.bind(this.name, ctx)
   },
   has: function(id, cb){
-    return saxer.has(id, cb)
+    return storeAct.has(id, cb)
   },
   pop: function(){
-    saxer.pop(this.name)
+    storeAct.pop(this.name)
   },
   trigger: function(data){
-    return saxer.trigger(this.name, data)
+    return storeAct.trigger(this.name, data)
   }
 }
 
@@ -570,15 +571,15 @@ function SAX(name, data, funs){
     if (save[name]) {
       return new sax(name, data, funs)
     } else {
-      saxer.set(name, data, funs)
+      storeAct.set(name, data, funs)
       return new sax(name, data, funs)
     }
   }
 }
 
-var _keys = Object.keys(saxer)
+var _keys = Object.keys(storeAct)
 _keys.map(function(item, ii){
-  SAX[item] = saxer[item]
+  SAX[item] = storeAct[item]
 })
 
 module.exports = SAX
