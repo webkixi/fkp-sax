@@ -1,6 +1,6 @@
 {
   "name": "fkp-sax",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "store data and action X, like react component or other method",
   "main": "index.js",
   "scripts": {

@@ -95,9 +95,9 @@ var store = function( name, data, act ){
     if (!data) data = this.sdata
       if (data || keyData) {
           // this.sdata = data;
+          var _resault = [];
           if (getObjType(this.sact) === 'Array') {
               var acts = this.sact;
-              var _resault = [];
               acts.map(function(fun) {
                   if (getObjType(fun.args) === 'Array') {
                       if (count(me.name)) {
@@ -153,18 +153,32 @@ var store = function( name, data, act ){
                               }
                               fun.args.push((data||_keydata||{}))
                               if (typeof fun === 'function'){
-                                return fun.apply(fun.args[0], [fun.args[0], (data||_keydata)])
+                                var _tmp = fun.apply(fun.args[0], [fun.args[0], (data||_keydata)])
+                                _resault.push(_tmp)
                               }
                           } else {
                               if (typeof fun === 'function'){
-                                return fun.call(me.ctx[me.name||'null'], (data||_keydata));
+                                var _tmp = fun.call(me.ctx[me.name||'null'], (data||_keydata));
+                                _resault.push(_tmp)
                               }
                           }
                       }
                   }
+                  return _resault
               }
           }
+          if (getObjType(this.sact) === 'Function') {
+            var fun = this.sact
+            if (Array.isArray(fun.args)) {
+              if (count(me.name)) { fun.args.pop() }
+              fun.args.push((data||_keydata||{}))
+              return typeof fun == 'function' ? fun.apply(fun.args[0], [fun.args[0], data]) : ''
+            } else {
+              return typeof fun == 'function' ? fun.call(me.ctx[me.name||'null'], (data||_keydata)) : ''
+            }
+          }
       } else {
+        var _resault = [];
           if (getObjType(this.sact) === 'Array') {
               var acts = this.sact;
               var _resault = [];
@@ -206,33 +220,78 @@ var store = function( name, data, act ){
                       }
                   }
               } else {
-                  for (var item in sacts) {
-                    var _keydata = _stockData[me.name+'.'+item]
-                      if (typeof sacts[item] === 'function') {
-                          var fun = sacts[item]
-                          if (getObjType(fun.args) === 'Array') {
-                              if (typeof fun === 'function')
-                                  return fun.apply(fun.args[0], [fun.args[0], _keydata])
-                          } else {
-                              if (typeof fun === 'function')
-                                  return fun.call(me.ctx[me.name||'null'], _keydata);
-                          }
-                      }
-                  }
+                for (var item in sacts) {
+                  var _keydata = _stockData[me.name+'.'+item]
+                    if (typeof sacts[item] === 'function') {
+                        var fun = sacts[item]
+                        if (getObjType(fun.args) === 'Array') {
+                            if (typeof fun === 'function'){
+                              var _tmp = fun.apply(fun.args[0], [fun.args[0], _keydata])
+                              _resault.push(_tmp);
+                            }
+                        } else {
+                            if (typeof fun === 'function'){
+                              var _tmp = fun.call(me.ctx[me.name||'null'], _keydata);
+                              _resault.push(_tmp);
+                            }
+                        }
+                    }
+                }
+                return _resault
               }
+          }
+          if (getObjType(this.sact) === 'Function') {
+            var fun = this.sact
+            if (Array.isArray(fun.args)) {
+              return typeof fun == 'function' ? fun.apply(fun.args[0], fun.args) : ''
+            } else {
+              return typeof fun == 'function' ? fun.call(me.ctx[me.name||'null']) : ''
+            }
           }
       }
   }
 
     this.acter = function( act ){
-      if (act) {
-        if (typeof this.sact == 'object' && typeof act == 'object') {
-          this.sact = extend(true, this.sact, act)
-        } else {
-          var src = typeof this.sact == 'object' ? this.sact : typeof this.sact == 'function' ? [this.sact] : {}
-          var ext = typeof act == 'object' ? act : typeof act == 'function' ? [act] : {}
-          this.sact = extend(true, src, ext)
-        }
+      var s_type = getObjType(this.sact)
+      var a_type = getObjType(act)
+
+      switch (s_type) {
+        case 'Object':
+          if (typeof act == 'object') this.sact = extend(true, this.sact, act)
+          else {
+            let _uuid = uniqueId()
+            if (typeof act == 'function') this.sact[_uuid] = act
+          }
+          break;
+        case 'Array':
+          switch (a_type) {
+            case 'Array':
+              this.sact = this.sact.concat(act)
+              break;
+            case 'Object':
+              this.sact = extend(true, this.sact, act)
+              break;
+            case 'Function':
+              this.sact = this.sact.push(act)
+              break;
+          }
+          break;
+        case 'Function':
+          switch (a_type) {
+            case 'Array':
+              this.sact = act.unshift(this.sact)
+              break;
+            case 'Object':
+              let _uuid = uniqueId()
+              this.sact = act[_uuid] = this.sact
+              break;
+            case 'Function':
+              this.sact = [this.sact, act]
+              break;
+          }
+          break;
+        default:
+          if (typeof act == 'function') this.sact = act
       }
     }
 
@@ -250,8 +309,6 @@ var store = function( name, data, act ){
       this.ctx[this.name] = ctx
     }
 }
-
-var _stock = {}
 
 //like flux
 var saxer = {
@@ -459,7 +516,10 @@ var saxer = {
     },
 
     setActions: function(name, acts){
-      this.set(name, null, acts)
+      var save = _stock;
+      if (save[name]) {
+        save[name].acter(acts)
+      }
     }
 }
 saxer.trigger = saxer.setter
@@ -472,8 +532,10 @@ saxer.roll = function(name, key, ddd){
   }
 }
 
-function sax(name){
+function sax(name, data, funs){
   this.name = name
+  this.data = data
+  this.funs = funs
 }
 sax.prototype = {
   roll: function(key, data){
@@ -492,13 +554,13 @@ sax.prototype = {
     saxer.bind(this.name, ctx)
   },
   has: function(id, cb){
-    saxer.has(id, cb)
+    return saxer.has(id, cb)
   },
   pop: function(){
     saxer.pop(this.name)
   },
   trigger: function(data){
-    saxer.trigger(this.name, data)
+    return saxer.trigger(this.name, data)
   }
 }
 
@@ -506,10 +568,10 @@ function SAX(name, data, funs){
   if (name) {
     var save = _stock;
     if (save[name]) {
-      return new sax(name)
+      return new sax(name, data, funs)
     } else {
       saxer.set(name, data, funs)
-      return new sax(name)
+      return new sax(name, data, funs)
     }
   }
 }
