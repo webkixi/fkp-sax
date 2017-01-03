@@ -1,7 +1,7 @@
 {
   "name": "fkp-sax",
-  "version": "1.4.4",
-  "description": "store data and action X, like react component or other method",
+  "version": "1.4.5",
+  "description": "store data and action X",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
