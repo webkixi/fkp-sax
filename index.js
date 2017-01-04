@@ -513,13 +513,6 @@ var storeAct = {
       var save = _stock;
       if (!save[name]) save[name] = new store(name)
       save[name].binder(ctx||null)
-    },
-
-    setActions: function(name, acts){
-      var save = _stock;
-      if (save[name]) {
-        save[name].acter(acts)
-      }
     }
 }
 storeAct.trigger = storeAct.setter
@@ -533,6 +526,7 @@ storeAct.roll = function(name, key, ddd){
 }
 
 function sax(name, data, funs){
+  this.ctx
   this.name = name
   this.data = data
   this.funs = funs
@@ -542,20 +536,30 @@ sax.prototype = {
   roll: function(key, data){
     return storeAct.roll(this.name, key, data)
   },
+  setActions: function(opts){
+    this.store.acter(opts)
+  },
+  set: function(data, fun){
+    storeAct.set(this.name, data, fun)
+  },
   get: function(){
-    return storeAct.get(this.name)
+    return this.store.sdata
   },
   append: function(data, fun){
     storeAct.append(this.name, data, fun)
+    this.data = this.store.sdata
+    return this.data
   },
   bind: function(ctx){
     storeAct.bind(this.name, ctx)
+    this.ctx = ctx
+    return this
   },
   has: function(id, cb){
     return storeAct.has(id, cb)
   },
   pop: function(){
-    storeAct.pop(this.name)
+    return storeAct.pop(this.name)
   },
   trigger: function(data){
     return storeAct.trigger(this.name, data)
@@ -573,6 +577,15 @@ function SAX(name, data, funs){
       var instance = new sax(name, data, funs)
       saxInstance[name] = instance
       return instance
+    }
+  }
+}
+
+SAX.fn = {
+  extend: function(opts){
+    var _fn = sax.prototype
+    if (getObjType(opts) == 'Object') {
+      sax.prototype = extend(_fn, opts)
     }
   }
 }
