@@ -337,7 +337,8 @@ var storeAct = {
         case 'Object':
           switch (d_type) {
             case 'Object':
-              save[name].sdata = extend(true, {}, save[name].sdata, dataOrAct)
+              // save[name].sdata = extend(true, {}, save[name].sdata, dataOrAct)
+              save[name].sdata = extend({}, save[name].sdata, dataOrAct)
               break;
             default:
               var _uuid = uniqueId(name+'_')
@@ -345,7 +346,7 @@ var storeAct = {
           }
           break;
         default:
-          save[name].sdata = [save[name].sdata, dataOrAct]
+          if (dataOrAct) save[name].sdata = [save[name].sdata, dataOrAct]
       }
     },
 
@@ -444,7 +445,7 @@ var storeAct = {
     },
 
     setter: function(name, dataOrAct, fun) {
-      this.append(name, dataOrAct, fun)
+      if (dataOrAct) this.append(name, dataOrAct, fun)
       return _stock[name].dataer(_stock[name].sdata)
     },
 
