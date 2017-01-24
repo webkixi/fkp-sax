@@ -520,9 +520,9 @@ storeAct.trigger = storeAct.setter
 storeAct.roll = function(name, key, ddd){
   if (typeof key == 'object') {
     ddd = key
-    storeAct.runner(name, ddd)
+    return storeAct.runner(name, ddd)
   } else {
-    storeAct.runner(name, ddd, key)
+    return storeAct.runner(name, ddd, key)
   }
 }
 
