@@ -363,6 +363,17 @@ var storeAct = {
       }
     },
 
+    update: function(name, target){
+      if (!name || name == '') return false;
+      if (typeof target != 'object') return false;
+      var save = _stock;
+      if (!save[name]) return false
+      var odata = save[name].getter('data')
+      Object.keys(target).map(function(item, ii){
+        odata[item] = target[item]
+      })
+    },
+
     set: function(name, dataOrAct, fun){
       if (!name || name == '') return false;
       if (!dataOrAct) dataOrAct = {}
@@ -550,6 +561,9 @@ sax.prototype = {
     storeAct.append(this.name, data, fun)
     this.data = this.store.sdata
     return this.data
+  },
+  update: function(data){
+    return storeAct.update(this.name, data)
   },
   bind: function(ctx){
     storeAct.bind(this.name, ctx)
