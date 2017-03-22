@@ -540,7 +540,7 @@ storeAct.roll = function(name, key, ddd){
 function sax(name, data, funs){
   this.ctx
   this.name = name
-  this.funs = funs
+  this.actions = _stock[name].sact
   this.store = _stock[name]
   this.data = _stock[name].sdata
 }
