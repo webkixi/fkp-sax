@@ -551,6 +551,12 @@ sax.prototype = {
   setActions: function(opts){
     this.store.acter(opts)
   },
+  on: function(key, fun){
+    var tmp = {}
+    tmp[key] = fun
+    this.store.acter(tmp)
+  },
+  off: function(){/*未完成*/},
   set: function(data, fun){
     storeAct.set(this.name, data, fun)
   },
