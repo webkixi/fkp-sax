@@ -138,8 +138,14 @@ var store = function( name, data, act ){
                           if (typeof fun === 'function')
                               return fun.apply(fun.args[0], [fun.args[0], (keyData||data)])
                       } else {
-                          if (typeof fun === 'function')
-                              return fun.call(me.ctx[me.name||'null'], (keyData||data));
+                          if (typeof fun === 'function'){
+                            return fun.call(me.ctx[me.name||'null'], (keyData||data));
+                          }
+                          if (getObjType(fun)=='Array') {
+                            return fun.map(function(_fun){
+                              return typeof _fun == 'function' ? _fun.call(me.ctx[me.name||'null'], (keyData||data)) : '';
+                            })
+                          }
                       }
                   }
               } else {
@@ -153,13 +159,18 @@ var store = function( name, data, act ){
                               }
                               fun.args.push((data||_keydata||{}))
                               if (typeof fun === 'function'){
-                                var _tmp = fun.apply(fun.args[0], [fun.args[0], (data||_keydata)])
+                                var _tmp = fun.apply(fun.args[0], [fun.args[0], (data)])
                                 _resault.push(_tmp)
                               }
                           } else {
                               if (typeof fun === 'function'){
-                                var _tmp = fun.call(me.ctx[me.name||'null'], (data||_keydata));
+                                var _tmp = fun.call(me.ctx[me.name||'null'], (data));
                                 _resault.push(_tmp)
+                              }
+                              if (getObjType(fun)=='Array') {
+                                _resault = fun.map(function(_fun){
+                                  return _fun.call(me.ctx[me.name||'null'], (data));
+                                })
                               }
                           }
                       }
@@ -257,7 +268,29 @@ var store = function( name, data, act ){
 
       switch (s_type) {
         case 'Object':
-          if (typeof act == 'object') this.sact = extend({}, this.sact, act)
+          if (typeof act == 'object') {
+            var _sact = this.sact
+            Object.keys(act).map(function(item){
+              var itemVal = act[item]
+              if (!itemVal) return
+              if (_sact[item]) {
+                var _itemVal = _sact[item]
+                switch (typeof _itemVal) {
+                  case 'function':
+                    _sact[item] = [_itemVal].concat(itemVal)
+                    break;
+                  case 'object':
+                    if (Array.isArray(_itemVal)) {
+                      _sact[item] = _itemVal.concat(itemVal)
+                    }
+                    break;
+                }
+              } else {
+                _sact[item] = itemVal
+              }
+            })
+            // this.sact = extend({}, this.sact, act)
+          }
           else {
             var _uuid = uniqueId()
             if (typeof act == 'function') this.sact[_uuid] = act
@@ -548,6 +581,7 @@ sax.prototype = {
   roll: function(key, data){
     return storeAct.roll(this.name, key, data)
   },
+  emit: this.roll,
   setActions: function(opts){
     this.store.acter(opts)
   },
