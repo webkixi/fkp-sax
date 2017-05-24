@@ -627,6 +627,12 @@ function SAX(name, data, funs){
   if (name) {
     var save = _stock;
     if (save[name]) {
+      if (data){
+        saxInstance[name].append(data)
+      }
+      if (funs) {
+        saxInstance[name].setActions(funs)
+      }
       return saxInstance[name]
     } else {
       storeAct.set(name, data, funs)
