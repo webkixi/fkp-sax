@@ -262,7 +262,7 @@ var store = function( name, data, act ){
       }
   }
 
-    this.acter = function( act ){
+    this.acter = function( act, del ){
       var s_type = getObjType(this.sact)
       var a_type = getObjType(act)
 
@@ -274,19 +274,23 @@ var store = function( name, data, act ){
               var itemVal = act[item]
               if (!itemVal) return
               if (_sact[item]) {
-                var _itemVal = _sact[item]
-                switch (typeof _itemVal) {
-                  case 'function':
-                    _sact[item] = [_itemVal].concat(itemVal)
-                    break;
-                  case 'object':
-                    if (Array.isArray(_itemVal)) {
-                      _sact[item] = _itemVal.concat(itemVal)
-                    }
-                    break;
+                if (del) {
+                  delete _sact[item]
+                } else {
+                  var _itemVal = _sact[item]
+                  switch (typeof _itemVal) {
+                    case 'function':
+                      _sact[item] = [_itemVal].concat(itemVal)
+                      break;
+                    case 'object':
+                      if (Array.isArray(_itemVal)) {
+                        _sact[item] = _itemVal.concat(itemVal)
+                      }
+                      break;
+                  }
                 }
               } else {
-                _sact[item] = itemVal
+                !del ? _sact[item] = itemVal : ''
               }
             })
             // this.sact = extend({}, this.sact, act)
@@ -590,7 +594,11 @@ sax.prototype = {
     tmp[key] = fun
     this.store.acter(tmp)
   },
-  off: function(){/*未完成*/},
+  off: function(key){
+    var tmp = {}
+    tmp[key] = true
+    this.store.acter(tmp, 'del')
+  },
   set: function(data, fun){
     storeAct.set(this.name, data, fun)
   },
