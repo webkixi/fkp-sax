@@ -1,6 +1,6 @@
 {
   "name": "fkp-sax",
-  "version": "1.5.17",
+  "version": "1.5.18",
   "description": "store data and action X",
   "main": "index.js",
   "scripts": {

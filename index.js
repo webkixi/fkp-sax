@@ -585,7 +585,9 @@ sax.prototype = {
   roll: function(key, data){
     return storeAct.roll(this.name, key, data)
   },
-  emit: this.roll,
+  emit: function(key, data){
+    return storeAct.roll(this.name, key, data)
+  },
   setActions: function(opts){
     this.store.acter(opts)
   },
