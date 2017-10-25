@@ -591,15 +591,52 @@ sax.prototype = {
   setActions: function(opts){
     this.store.acter(opts)
   },
-  on: function(key, fun){
+  on: function(key, onopts, fun){
+    if (typeof onopts == 'function') {
+      fun = onopts
+      onopts = undefined
+    }
+    if (typeof fun != 'function') return 
+    if (!fun.guid) fun.guid = uniqueId('event_')
     var tmp = {}
     tmp[key] = fun
     this.store.acter(tmp)
   },
-  off: function(key){
-    var tmp = {}
-    tmp[key] = true
-    this.store.acter(tmp, 'del')
+  off: function(key, offopts, ccb){
+    if (typeof offopts == 'function') {
+      ccb = offopts
+      offopts = undefined
+    }
+    if (!ccb) {
+      var tmp = {}
+      tmp[key] = true
+      this.store.acter(tmp, 'del')
+    } else {
+      if (typeof ccb == 'function') {
+        var _sact = this.store.sact
+        if (_sact && typeof _sact == 'object') {
+          var _sact_vals = _sact[key] 
+          if (_sact_vals && typeof _sact_vals == 'object') {
+            if (Array.isArray(_sact_vals)) {
+              var index = -1
+              _sact_vals.forEach(function(val, ii){
+                if (val.guid == ccb.guid) index = ii 
+                // if (val == ccb) index = ii 
+              })
+              if (index > -1) _sact_vals.splice(index, 1)
+            } else {
+              Object.keys(_sact_vals).forEach(function(_key, ii){
+                if (_sact_vals[_key].guid == ccb.guid) {
+                  delete _sact_vals[_key]
+                }
+              })
+            }
+          } else {
+            delete _sact[key]
+          }
+        }
+      }
+    }
   },
   set: function(data, fun){
     storeAct.set(this.name, data, fun)
