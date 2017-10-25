@@ -592,15 +592,28 @@ sax.prototype = {
     this.store.acter(opts)
   },
   on: function(key, onopts, fun){
+    var tmp = {}
     if (typeof onopts == 'function') {
       fun = onopts
       onopts = undefined
     }
-    if (typeof fun != 'function') return 
-    if (!fun.guid) fun.guid = uniqueId('event_')
-    var tmp = {}
-    tmp[key] = fun
-    this.store.acter(tmp)
+    if (typeof fun == 'function') {
+      if (!fun.guid) fun.guid = uniqueId('event_')
+      tmp[key] = fun
+      this.store.acter(tmp)
+    }
+    else 
+    if (getObjType(fun) == 'Array') {
+      var myFuns = []
+      fun.forEach(function(_fun){
+        if (typeof _fun == 'function') {
+          if (!_fun.guid) _fun.guid = uniqueId('event_')
+          myFuns.push(_fun)
+        }
+      })
+      tmp[key] = myFuns
+      this.store.acter(tmp)
+    }
   },
   off: function(key, offopts, ccb){
     if (typeof offopts == 'function') {
