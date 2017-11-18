@@ -3,7 +3,30 @@ var _stockData = {}   //数据容器
 var uuid = -1;
 
 function getObjType(object){
-    return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
+  return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
+}
+
+function isEmpty(v) {
+  switch (typeof v) {
+    case 'undefined':
+      return true;
+    case 'string':
+      if (v.replace(/(^[ \t\n\r]*)|([ \t\n\r]*$)/g, '').length == 0) return true;
+      break;
+    case 'boolean':
+      if (!v) return true;
+      break;
+    case 'number':
+      if (0 === v || isNaN(v)) return true;
+      break;
+    case 'object':
+      if (null === v || v.length === 0) return true;
+      for (var i in v) {
+        return false;
+      }
+      return true;
+  }
+  return false;
 }
 
 function uniqueId(prefix){
@@ -615,6 +638,12 @@ sax.prototype = {
       this.store.acter(tmp)
     }
   },
+  hasOn: function(key) {
+    var _sact = this.store.sact
+    if (_sact && typeof _sact == 'object') {
+      return !isEmpty(_sact[key])
+    }
+  },
   off: function(key, offopts, ccb){
     if (typeof offopts == 'function') {
       ccb = offopts
@@ -650,6 +679,10 @@ sax.prototype = {
         }
       }
     }
+  },
+  one: function(key, oneopts, cb) {
+    this.off(key)
+    this.on(key, oneopts, cb)
   },
   set: function(data, fun){
     storeAct.set(this.name, data, fun)
