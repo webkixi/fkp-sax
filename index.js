@@ -368,6 +368,12 @@ var store = function( name, data, act ){
     this.binder = function(ctx) {
       this.ctx[this.name] = ctx
     }
+
+    this.unbinder = function() {
+      var theCtx = this.ctx
+      theCtx[this.name] = null
+      delete theCtx[this.name]
+    }
 }
 
 //like flux
@@ -585,6 +591,13 @@ var storeAct = {
       var save = _stock;
       if (!save[name]) save[name] = new store(name)
       save[name].binder(ctx||null)
+    },
+
+    unbind: function (name) {
+      if (!name || name == '') return;
+      var save = _stock;
+      if (!save[name]) return
+      save[name].unbinder()
     }
 }
 storeAct.trigger = storeAct.setter
@@ -605,6 +618,32 @@ function sax(name, data, funs){
   this.data = _stock[name].sdata
 }
 sax.prototype = {
+  destory: function() {
+    delete this.data
+    delete this.actions
+    this.store = null
+    var props = [
+      'roll',
+      'emit',
+      'setActions',
+      'on',
+      'hasOn',
+      'off',
+      'one',
+      'set',
+      'get',
+      'append',
+      'update',
+      'bind',
+      'unbind',
+      'has',
+      'pop',
+      'trigger',
+    ]
+    for (var i; i<props.length; i++) {
+      delete this[props[i]]
+    }
+  },
   roll: function(key, data){
     return storeAct.roll(this.name, key, data)
   },
@@ -702,7 +741,9 @@ sax.prototype = {
   bind: function(ctx){
     storeAct.bind(this.name, ctx)
     this.ctx = ctx
-    return this
+  },
+  unbind: function(){
+    storeAct.unbind(this.name)
   },
   has: function(id, cb){
     return storeAct.has(id, cb)
@@ -733,6 +774,13 @@ function SAX(name, data, funs){
       saxInstance[name] = instance
       return instance
     }
+  }
+}
+
+SAX.destory = function(name){
+  if (typeof name == 'string') {
+    storeAct.deleter(name)
+    delete saxInstance[name]
   }
 }
 
